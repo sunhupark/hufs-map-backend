@@ -1,9 +1,69 @@
-{
-  "name": "delete-user",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "src/main.js",
-  "dependencies": {
-    "node-appwrite": "latest"
+import { Client, Users, Databases, Query } from "node-appwrite";
+
+export default async ({ req, res, log, error }) => {
+  try {
+    const body = JSON.parse(req.body || "{}");
+    const userId = body.userId;
+
+    if (!userId) {
+      return res.json(
+        {
+          success: false,
+          message: "userId is required",
+        },
+        400
+      );
+    }
+
+    const client = new Client()
+      .setEndpoint(process.env.APPWRITE_ENDPOINT)
+      .setProject(process.env.APPWRITE_PROJECT_ID)
+      .setKey(process.env.APPWRITE_API_KEY);
+
+    const users = new Users(client);
+    const databases = new Databases(client);
+
+    log(`received userId: ${userId}`);
+
+    // 1. Auth > Users 계정 삭제
+    await users.delete(userId);
+    log(`Auth user deleted: ${userId}`);
+
+    // 2. Database > users row 삭제
+    const docs = await databases.listDocuments(
+      process.env.APPWRITE_DATABASE_ID,
+      process.env.APPWRITE_USERS_COLLECTION_ID,
+      [Query.equal("userId", userId)]
+    );
+
+    for (const doc of docs.documents) {
+      await databases.deleteDocument(
+        process.env.APPWRITE_DATABASE_ID,
+        process.env.APPWRITE_USERS_COLLECTION_ID,
+        doc.$id
+      );
+
+      log(`users row deleted: ${doc.$id}`);
+    }
+
+    return res.json(
+      {
+        success: true,
+        message: "Auth user and users row deleted",
+        deletedUserId: userId,
+        deletedDocumentCount: docs.documents.length,
+      },
+      200
+    );
+  } catch (err) {
+    error(err.message);
+
+    return res.json(
+      {
+        success: false,
+        message: err.message,
+      },
+      500
+    );
   }
-}
+};
