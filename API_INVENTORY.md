@@ -267,3 +267,16 @@ if (userRows.length > 0 && userRows[0].deleted === true) {
 {
   "userId": "currentUser.$id"
 }
+---
+
+## Appwrite Project Information
+
+본 프로젝트는 Appwrite를 활용하여 사용자 인증, 데이터베이스, 스토리지, 회원 탈퇴 Function을 관리한다.
+
+- Project Name: HUFS MAP
+- Project ID: 6a04171c0011ce7ababf
+- Endpoint: https://nyc.cloud.appwrite.io/v1
+- Database Name: HUFS MAP db
+- Database ID: 6a0421f7006ae3722a8
+
+주요 기능은 사용자 인증, 학교 이메일 인증, users 테이블 사용자 정보 저장, 건물 즐겨찾기, 회원 탈퇴 Function, 마이페이지 데이터 조회 기능이다.
