@@ -40,3 +40,14 @@ export const updateFavoriteBuildings = async (buildingKey) => {
     },
   });
 };
+export const getMyProfile = async () => {
+  const userRow = await getCurrentUserRow();
+
+  return {
+    email: userRow.email,
+    username: userRow.username,
+    nickname: userRow.nickname,
+    favoriteBuildings: userRow.favoriteBuildings || [],
+    deleted: userRow.deleted || false,
+  };
+};
